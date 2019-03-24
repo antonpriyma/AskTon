@@ -1,5 +1,10 @@
-{% for q in questions%}
-    <p>{{ q }}</p>
-{% endfor % }
-
-<p> total: {{questions|length}}</p>
+<html>
+    <head>
+        <title>Django Girls blog</title>
+    </head>
+    <body>
+        {% for post in questions %}
+    {{ post }}
+{% endfor %}
+    </body>
+</html>

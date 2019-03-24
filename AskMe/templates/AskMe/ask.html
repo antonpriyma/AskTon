@@ -1,4 +1,6 @@
-<!DOCTYPE html> {% load static %}
+<!DOCTYPE html>
+{%  extends "AskMe/base.html" %}
+{% load static %}
 <html lang="en">
 
 <head>
@@ -13,48 +15,10 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
-        <a class="navbar-brand mb-3 m-auto text-success" href="#">AskTon</a>
-        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse" id="navbarCollapse" style="">
-            <form class="navbar-form mx=auto w-50" action="/action_page.php">
-                <div class="input-group ml-3 my-auto">
-                    <input class="form-control " t{% load static %}ype="text" placeholder="Question">
-                    <div class="input-group-append">
-                        <span class="input-group-text">?</span>
-                    </div>
-                </div>
-            </form>
 
-            <button class="btn btn-outline-success my-auto ml-md-4 " type="submit">Ask!</button>
-            <ul class="navbar-nav auto ml-auto mb-auto">
-                <li class="nav-item">
-                    <a class="nav-link " href="#">Sign In</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Sign Up</a>
-                </li>
-                <!--<li class="px-2">-->
-                <!--<div class="avatar-thumbnail mb-2">-->
-                <!--<img src="#">-->
-                <!--</div>-->
-                <!--</li>-->
-                <!--<li class="px-2">-->
-                <!--<div class="text-white ml-3" style="display: block;">Name</div>-->
-                <!--<a class="btn text-primary" href="#">settings</a>-->
-                <!--<a class="btn text-primary" href="#">logout</a>-->
-                <!--</li>-->
-            </ul>
 
-        </div>
 
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-9 mt-5 ">
+                 {% block main-content %}
                 <div class="row justify-content-begin">
                     <div class="col-xl-9  pr-4 " >
                 <h1 class="mt-4 mb-4 mx-3">New Question</h1>
@@ -80,31 +44,7 @@
                 <button class="btn btn-success my-3 mx-3">Ask!</button>
                     </div>
                 </div>
-            </div>
-            <!--<div class="col-md-3">-->
-
-            <!--</div>-->
-            <div class="col-md-3 mt-5 blog-sidebar bg-light ">
-                <div class="p-3 mb-3 mt-3  rounded">
-                    <h4 class="mb-3">Popular Tags</h4>
-
-                    <div id="tag-cloud" class="md-0">
-                        <h2 class="ml-auto">Tags</h2>
-                    </div>
-                </div>
-                <div class="p-3 ">
-                    <h4 class="mb-3">Best Members</h4>
-                    <ol class="list mb-1">
-                        <li class="mb-1"><a href="#"><u>Steve</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Hue</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Mark</u></a></li>
-                        <li class="mb-1"><a href="#"><u>German</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Pupkin</u></a></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
+                {% endblock %}
 
 </body>
 

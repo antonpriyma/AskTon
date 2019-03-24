@@ -14,12 +14,12 @@
 <body>
 
     <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
-        <a class="navbar-brand mb-3 m-auto text-success" href="#">AskTon</a>
+        <a class="navbar-brand mb-3 m-auto text-success" href="{% url "questions_list" %}">AskTon</a>
         <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse collapse" id="navbarCollapse" style="">
-            <form class="navbar-form mx=auto w-50" action="/action_page.php">
+            <form class="navbar-form mx=auto w-50" action="#" >
                 <div class="input-group ml-3 my-auto">
                     <input class="form-control " type="text" placeholder="Question">
                     <div class="input-group-append">
@@ -28,13 +28,13 @@
                 </div>
             </form>
 
-            <button class="btn btn-outline-success my-auto ml-md-4 " type="submit">Ask!</button>
+            <a class="btn btn-outline-success my-auto ml-md-4" role="button" href="{% url "ask_question"  %}" type="submit">Ask!</a>
             <ul class="navbar-nav auto ml-auto mb-auto">
                 <li class="nav-item">
-                <a class="nav-link " href="#">Sign In</a>
+                <a class="nav-link " href="{% url "login" %}">Sign In</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="#">Sign Up</a>
+                <a class="nav-link" href="{% url "register" %}">Sign Up</a>
                 </li>
                 <!--<li class="px-2">-->
                     <!--<div class="avatar-thumbnail mb-2">-->
@@ -52,12 +52,10 @@
 
     </nav>
 
-    <div container>
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-9">
-                <h1 class="display-1 text-danger">
-            Content
-          </h1>
+             <div class="col-sm-9 mt-5 ">
+                  {% block main-content %}{% endblock %}
             </div>
             <div class="col-md-3 blog-sidebar bg-light">
                 <div class="p-3 mb-3  rounded">
