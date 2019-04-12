@@ -1,10 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+
+{%  load static %}
+
+
+    <div class="row  mb-4 mt-3  p-2 border-bottom border-dark ml-4">
+                    <div class="col-sm-2  my-auto ">
+                        <div class="avatar-thumbnail mb-2">
+                            <img src="{% static question.author.photo %}" width="100" height="100">
+                        </div>
+                        <div class="mt-4">
+                            <kbd>Rating: {{ question.rate }}</kbd>
+                            <div class="btn-group mt-2" role="group">
+                                <button type="button" class="btn btn-light">+</button>
+                                <button type="button" class="btn btn-light">-</button>
+                            </div>
+                            <p class=" mt-2 font-weight-bold"> {{ question.author.name }}</p>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-10  mt-4">
+                        <h3 class="mb-2 mt-3"><a href={% url 'question' question.id %}>{{ question.title }}</a></h3>
+                        <p>{{ question.content }}
+
+                        </p>
+
+                        <div class="mb-5">
+                            <a href={% url 'question' question.id %} class="card-link">I know answer!</a>
+                            <div class="float-right">
+                                <span>Tags:</span>
+                                {%  for tag in question.tags %}
+                                <a href={% url "tag" tag.text %}> {{ tag.text }}</a>
+                                    {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>

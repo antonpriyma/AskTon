@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Post(models.Model):
@@ -17,13 +18,14 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-class User(models.Model):
+class Profile(models.Model):
     email = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
     password = models.CharField(max_length=30)
     photo = models.ImageField
     created_date = models.DateTimeField(default=timezone.now)
     rate = models.IntegerField(default=0)
+    user = models.OneToOneField(User)
 
 class Tag(models.Model):
     text = models.CharField(max_length=64)
@@ -33,21 +35,28 @@ class Tag(models.Model):
 
 
 
-class Question(models.Model):
+class Answer(models.Model):
+    id = models.IntegerField
     title = models.TextField
     content = models.TextField
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_date = models.DateTimeField(default=timezone.now)
-    tags = models.ManyToManyField(Tag)
-    rate = models.IntegerField
-
-class Answer(models.Model):
-    content = models.TextField
-    question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now)
     isRight = models.BooleanField
     rate = models.IntegerField
+
+class Question(models.Model):
+    id = models.IntegerField
+    title = models.TextField
+    content = models.TextField
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    created_date = models.DateTimeField(default=timezone.now)
+    tags = models.ManyToManyField(Tag)
+    answers = models.ManyToManyField(Answer)
+    rate = models.IntegerField
+
+class Profile()
+
+
 
 
 

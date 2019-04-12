@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
 
-</body>
-</html>
+{%  load static %}
+
+    <div class="row  mb-4  p-2  ml-4 border border-dark rounded">
+                        <div class="col-sm-2 my-auto">
+                            <div class="avatar-thumbnail mb-2">
+                                <img src="{% static answer.author.photo %}" width="100" height="100">
+                            </div>
+                            <div class="mt-4">
+                                <kbd>Rating: {{ answer.rate }}</kbd>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-light">+</button>
+                                    <button type="button" class="btn btn-light">-</button>
+                                </div>
+                                 <p class=" mt-2 font-weight-bold"> {{ answer.author.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-10 mt-4">
+                            <h3 class="mb-2 mt-3"><a href={% url 'question' answer.id %}>{{ answer.title }}</a></h3>
+                        <p>{{ answer.content }}
+
+                        </p>
+
+
+                            <div class="mb-5">
+                                <div class="float-left">
+                                    <form>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="correctCheck {{ answer.id }}" name="example1">
+                                            <label class="custom-control-label" for="correctCheck {{ answer.id }}">Correct</label>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>

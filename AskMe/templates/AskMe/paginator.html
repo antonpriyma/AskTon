@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-        <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</head>
-<body>
-  <div class="text-center mb-3">
-                    <div class="btn-group" role="group" style="text-align: center;">
-                        <button type="button" class="btn btn-light">First</button>
-                        <button type="button" class="btn btn-light">1</button>
-                        <button type="button" class="btn btn-light">2</button>
-                        <button type="button" class="btn btn-light">3</button>
-                        <button type="button" class="btn btn-light">Last</button>
-                    </div>
-                </div>
-</body>
-</html>
+
+<div class="text-center mb-3">
+    <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item {%if questions.has_previous == False %} disabled {% endif %}"><a class="page-link" href="{% if questions.has_previous %}?page={{ questions.previous_page_number }}{% endif %}">Previous</a></li>
+        {% for page_num in questions.paginator.page_range %}
+            <li class="page-item {% if questions.number == page_num %}active{% endif %}"><a class="page-link" href="?page={{ page_num }}">{{page_num}}</a></li>
+        {% endfor %}
+   <li class="page-item {%if questions.has_next == False %} disabled {% endif %}"><a class="page-link" href="{% if questions.has_next %}?page={{ questions.next_page_number }}{% endif %}">Next</a></li>
+  </ul>
+</nav>
+</div>
