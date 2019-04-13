@@ -5,7 +5,7 @@
     <div class="row  mb-4 mt-3  p-2 border-bottom border-dark ml-4">
                     <div class="col-sm-2  my-auto ">
                         <div class="avatar-thumbnail mb-2">
-                            <img src="{% static question.author.photo %}" width="100" height="100">
+                            <img src="{% static question.author.photo.url %}" width="100" height="100">
                         </div>
                         <div class="mt-4">
                             <kbd>Rating: {{ question.rate }}</kbd>
@@ -13,7 +13,7 @@
                                 <button type="button" class="btn btn-light">+</button>
                                 <button type="button" class="btn btn-light">-</button>
                             </div>
-                            <p class=" mt-2 font-weight-bold"> {{ question.author.name }}</p>
+                            <p class=" mt-2 font-weight-bold"> {{ question.author.user.username }}</p>
 
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                             <a href={% url 'question' question.id %} class="card-link">I know answer!</a>
                             <div class="float-right">
                                 <span>Tags:</span>
-                                {%  for tag in question.tags %}
+                                {%  for tag in question.tags.all %}
                                 <a href={% url "tag" tag.text %}> {{ tag.text }}</a>
                                     {% endfor %}
                             </div>

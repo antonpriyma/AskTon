@@ -1,53 +1,15 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Post
-
-# Create your views here.
-userDanya =({'photo': 'images/сool_programmer.jpg', 'name':'Gaver'})
-userSanya =({'photo': 'images/female_programmer.jpg', 'name':'SanyaChelaba'})
-tags = []
-tags.append({'text': "Heap"})
-tags.append({'text': "C++"})
-tags.append({'text': "Java"})
-tags.append({'text': "Golang"})
-tags.append({'text': "Python"})
-questions = []
-answers = []
-for i in range(1,3):
-    answers.append({
-          'id': i,
-          'rate': i,
-          'title': "title " + str(i),
-          'content': "text " + str(i),
-          'author': userDanya
-      })
-for i in range(1,10):
-  questions.append({
-    'id': i,
-    'rate': i,
-   'title':"title " + str(i),
-   'content': "text " + str(i),
-    'tags': tags,
-    'author': userDanya,
-    'answers':answers
-  })
-
-
-questions.append({
-'id': i,
-   'title':"How to install linux and start living",
-   'content': "text " + str(i),
-    'tags': tags,
-    'author': userSanya
-})
+from .models import Question
+from .models import Tag
 
 
 def questions_list(request):
     # return render(request, 'AskMe/index.html',{'questions':questions})
-    paginator=paginate(request)
+    questons = Question.list.all()
+    paginator = paginate(request, questons)
     page = request.GET.get('page')
-
     try:
         quest = paginator.page(page)
     except PageNotAnInteger:
@@ -60,7 +22,8 @@ def questions_list(request):
 
 def hot_list(request):
     # return render(request, 'AskMe/index.html',{'questions':questions})
-    paginator = paginate(request)
+    questions = Question.list.hot_questions()
+    paginator = paginate(request, questions)
     page = request.GET.get('page')
 
     try:
@@ -73,50 +36,77 @@ def hot_list(request):
     return render(request, 'AskMe/hot.html', {'questions': quest})
 
 
+def best_list(request):
+    # return render(request, 'AskMe/index.html',{'questions':questions})
+    questions = Question.list.hot_questions()
+    paginator = paginate(request, questions)
+    page = request.GET.get('page')
+
+    try:
+        quest = paginator.page(page)
+    except PageNotAnInteger:
+        quest = paginator.page(1)
+    except EmptyPage:
+        quest = paginator.page(paginator.num_pages)
+
+    return render(request, 'AskMe/best_questions.html', {'questions': quest})
+
+
+def new_list(request):
+    # return render(request, 'AskMe/index.html',{'questions':questions})
+    questions = Question.list.new_questions()
+    paginator = paginate(request, questions)
+    page = request.GET.get('page')
+
+    try:
+        quest = paginator.page(page)
+    except PageNotAnInteger:
+        quest = paginator.page(1)
+    except EmptyPage:
+        quest = paginator.page(paginator.num_pages)
+
+    return render(request, 'AskMe/new_questions.html', {'questions': quest})
+
+
 def ask_question(request):
-    return render(request,'AskMe/ask.html',{})
+    return render(request, 'AskMe/ask.html', {})
 
 
-def question_question(request,question_id):
-    return render(request,'AskMe/question.html',{'id': question_id,'question': questions[int(question_id)],'answers': questions[:3]})
+def question_question(request, question_id):
+    return render(request, 'AskMe/question.html', {'question': Question.list.get(pk=question_id)})
 
-def tag_question(request,tag_name):
-    if (tag_name):
-        tag = ({'text': tag_name})
-    return render(request,'AskMe/QuestionsForTag.html',{'tag':tag,'questions':questions})
+
+def tag_question(request, tag_name):
+    tag = Tag.objects.get(text=tag_name)
+    questions = Question.list.new_questions().filter(tags__text=tag.text)
+    paginator = paginate(request, questions)
+    page = request.GET.get('page')
+
+    try:
+        quest = paginator.page(page)
+    except PageNotAnInteger:
+        quest = paginator.page(1)
+    except EmptyPage:
+        quest = paginator.page(paginator.num_pages)
+    return render(request, 'AskMe/QuestionsForTag.html', {'tag': tag, 'questions': quest})
+
 
 def login(request):
-    return render(request,'register/Login.html',{})
+    return render(request, 'register/Login.html', {})
+
 
 def settings(request):
-    return render(request,'register/accountSettings.html',{})
+    return render(request, 'register/accountSettings.html', {})
+
 
 def register(request):
-    return render(request,'register/register.html',{})
+    return render(request, 'register/register.html', {})
+
 
 def test(request):
-    return render(request,'AskMe/test.html',{})
-
-# def paginate(objects_list, request):
-#     paginator = Paginator(objects_list,4)
-#     page = request.GET.get("")
-#     questions_paginate = page.get_page(page)
-#     return objects_page, paginator
+    return render(request, 'AskMe/test.html', {})
 
 
-
-def paginate(request):
-    paginator = Paginator(questions, 3)
+def paginate(request, objects_list):
+    paginator = Paginator(objects_list, 3)
     return paginator
-    # page = request.GET.get('page')
-    #
-    # try:
-    #     quest = paginator.page(page)
-    # except PageNotAnInteger:
-    #     quest = paginator.page(1)
-    # except EmptyPage:
-    #     quest = paginator.page(paginator.num_pages)
-    #
-    # return render(request, 'AskMe/index.html', {'questions': quest})
-
-

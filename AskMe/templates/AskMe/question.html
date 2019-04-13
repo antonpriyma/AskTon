@@ -19,7 +19,7 @@
 
                 <div  id="answers border-bottom border-dark">
 
-                            {%  for answer in question.answers %}
+                            {%  for answer in question.answers.all %}
                                  {% include "AskMe/answer-card.html" %}
                             {%  endfor %}
 

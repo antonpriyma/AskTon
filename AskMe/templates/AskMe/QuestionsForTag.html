@@ -8,20 +8,26 @@
                 {% block main-content %}
                 <div class="row justify-content-begin">
                     <div class="col-xl-9  pr-4 " >
-                {% for key,value in tag.items %}
-                 <h1 class="mt-3 mb-4">Tag: {{ value }}</h1>
-                 {%  endfor %}
+
+                 <h1 class="mt-3 mb-4">Tag: {{ tag.text }}</h1>
+
 
                  {% for question in questions %}
-                     {% if tag in question.tags %}
-                   {% include "AskMe/question_card.html" %}
 
+                         {% for question_tag in question.tags.all %}
+                          {% if tag.text == question_tag.text %}
+                   {% include "AskMe/question_card.html" %}
                        {% endif %}
+                     {% endfor %}
                         {% endfor %}
 
 
 
-                        {% include 'AskMe/paginator.html' %}
+
                         </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                    {% include 'AskMe/paginator.html' %}
                     </div>
                 {%  endblock %}
