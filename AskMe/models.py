@@ -3,8 +3,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class QuestionManager(models.Manager):
@@ -18,26 +16,23 @@ class QuestionManager(models.Manager):
         return self.new_questions().order_by('-rate')
 
 
-class Post(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    text = models.TextField()
-    created_date = models.DateTimeField(default=timezone.now)
-    published_date = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+# class Post(models.Model):
+#     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     title = models.CharField(max_length=200)
+#     text = models.TextField()
+#     created_date = models.DateTimeField(default=timezone.now)
+#     published_date = models.DateTimeField(blank=True, null=True)
+#     is_active = models.BooleanField(default=True)
+#
+#     def publish(self):
+#         self.published_date = timezone.now()
+#         self.save()
+#
+#     def __str__(self):
+#         return self.title
 
-    def publish(self):
-        self.published_date = timezone.now()
-        self.save()
 
-    def __str__(self):
-        return self.title
-
-
-class Profile(models.Model):
-    id = models.IntegerField(default=0,primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    email = models.EmailField(default="email")
+class Profile(AbstractUser):
     # name = models.CharField(max_length=30)
     # password = models.CharField(max_length=30)
     photo = models.ImageField(default='images/cool_programmer.jpg')
@@ -55,8 +50,11 @@ class Profile(models.Model):
     #     instance.profile.save()
 
     def __str__(self):
-        return self.user.username
+        return self.username
 
+class Vote(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    id = models.IntegerField(default=-1,primary_key=True)
 
 class Tag(models.Model):
     text = models.CharField(max_length=64, unique=True)
@@ -66,28 +64,30 @@ class Tag(models.Model):
 
 
 class Answer(models.Model):
-    id = models.IntegerField(default=-1, primary_key=True)
-    title = models.TextField(default="")
+    # id = models.IntegerField(default=-1, primary_key=True)
+    title = models.CharField(max_length=20,default="")
     content = models.TextField(default="")
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now)
     isRight = models.BooleanField(default=False)
-    rate = models.IntegerField(default=0)
+    votes = models.ManyToManyField(Vote)
 
     def __str__(self):
         return self.content
 
 
 class Question(models.Model):
-    id = models.IntegerField(default=-1, primary_key=True)
-    title = models.TextField(default="")
+    # id = models.IntegerField(default=-1, primary_key=True)
+    title = models.CharField(max_length=20,default="")
     content = models.TextField(default="")
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now)
     tags = models.ManyToManyField(Tag)
     answers = models.ManyToManyField(Answer)
-    rate = models.IntegerField(default=0)
     list = QuestionManager()
+    votes=models.ManyToManyField(Vote)
+
+    # TODO: Доделать голосование
 
     def __str__(self):
         return self.title

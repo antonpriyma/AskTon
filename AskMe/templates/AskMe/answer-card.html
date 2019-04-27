@@ -7,7 +7,7 @@
                                 <img src="{% static answer.author.photo.url %}" width="100" height="100">
                             </div>
                             <div class="mt-4">
-                                <kbd>Rating: {{ answer.rate }}</kbd>
+                                <kbd>Rating: {{answer.votes.count}}</kbd>
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn btn-light">+</button>
                                     <button type="button" class="btn btn-light">-</button>

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from .paginate import paginate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .models import Question
 from .models import Tag
@@ -38,7 +38,7 @@ def hot_list(request):
 
 def best_list(request):
     # return render(request, 'AskMe/index.html',{'questions':questions})
-    questions = Question.list.hot_questions()
+    questions = Question.list.best_questions()
     paginator = paginate(request, questions)
     page = request.GET.get('page')
 
@@ -107,6 +107,3 @@ def test(request):
     return render(request, 'AskMe/test.html', {})
 
 
-def paginate(request, objects_list):
-    paginator = Paginator(objects_list, 3)
-    return paginator

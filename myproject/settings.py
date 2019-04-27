@@ -101,6 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "AskMe.Profile"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
