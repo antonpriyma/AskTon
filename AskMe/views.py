@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from pip._vendor.requests import auth
 import json
 
+from AskMe.forms import CustomUserCreationForm
 from .paginate import paginate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .models import Question
@@ -9,8 +10,8 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from .models import Tag
 from .models import User
 from django import forms
-from django.contrib import auth
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib import auth, messages
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 def questions_list(request):
@@ -100,21 +101,30 @@ def tag_question(request, tag_name):
 
 
 def login(request):
-    if (request.method == 'POST'):
-        username=request.POST.get('username')
-        password = request.POST.get('password')
-        user = auth.authenticate(request,username=username,password=password)
-        if user:
-            auth.login(request,user)
-            return HttpResponseRedirect('index')
-        else:
-            return HttpResponseRedirect('login/invalid')
+    if request.method == 'POST':
+        form = AuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = auth.authenticate(username=username, password=password)
+            if user is not None:
+                print(user)
+                auth.login(request, user)
+                return HttpResponseRedirect('index')
+            else:
+                return HttpResponseRedirect('login/invalid')
 
-    else:
-        return render(request, 'register/Login.html')
+    elif request.method == 'GET':
+        form = AuthenticationForm()
+        return render(request, 'register/Login.html', {'form': form})
 
 def login_invalid(request):
-    return render(request, 'register/Login.html', {'error':"Invalid login or password:("})
+    form = AuthenticationForm(request=request, data=request.POST)
+    return render(request, 'register/Login.html', {'error':"Invalid login or password:(",'form': form})
+
+def register_invalid(request):
+    form = CustomUserCreationForm(request.POST)
+    return render(request, 'register/register.html.html', {'error':"Invalid data:(",'form': form})
 
 
 def settings(request):
@@ -122,17 +132,19 @@ def settings(request):
 
 
 def register(request):
-    form = UserCreationForm()
-    if (request.method == 'POST'):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
-        user = User.objects.create_user(username, email, password)
-        user.save()
-        HttpResponseRedirect('index')
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Account created successfully')
+            auth.login(request, user)
+            return HttpResponseRedirect('index')
+        else:
+            return HttpResponseRedirect('login/invalid')
+    elif request.method == 'GET':
+        form = CustomUserCreationForm()
+        return render(request, 'register/register.html', {'form': form})
 
-
-    return render(request, 'register/register.html')
 
 def logout(request):
     auth.logout(request)

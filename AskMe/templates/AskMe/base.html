@@ -31,11 +31,11 @@
                 {% if user.is_authenticated %}
                 <li class="px-2">
                     <div class="avatar-thumbnail mb-2">
-                        <img src="#">
+                        <img src="{% static user.photo.url %}" width="50" height="50">
                     </div>
                 </li>
                 <li class="px-2">
-                    <div class="text-white ml-3" style="display: block;">Name</div>
+                    <div class="text-white ml-3" style="display: block;">{{ user.username }}</div>
                     <a class="btn text-primary" href="#">settings</a>
                     <a class="btn text-primary" href="{% url 'logout' %}">logout</a>
                 </li>
