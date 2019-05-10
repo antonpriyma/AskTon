@@ -80,12 +80,9 @@ class Command(BaseCommand):
 
             # answers=options['answers_to_one_count'])  # мы сейчас точно знаем, сколько будет ответов
 
-            try:
-                question.save()
-                i += 1
-            except IntegrityError:
-                self.stdout.write('Info: Question DUPLICATION. Repeating #' + str(i))
-                continue
+
+            question.save()
+
             # while
             question.tags.add(get_random_element(Tag.objects.all(), None, None))
             question.tags.add(get_random_element(Tag.objects.all(), None, None))
@@ -93,12 +90,12 @@ class Command(BaseCommand):
 
             for _ in range(options['answers_to_one_count']):
                 answer = Answer(title=question.title, content=self.fake.text(max_nb_chars=250, ext_word_list=None),
-                                author=get_random_element(Profile.objects, None, None), id=Answer.objects.count() + 1)
+                                author=get_random_element(Profile.objects, None, None),questions=question)
 
                 answer.save()
-                question.answers.add(answer)
 
-            correct_answ = question.answers.all()[0]
+
+            correct_answ = question.answer_set.all()[0]
             correct_answ.is_correct = True
 
             correct_answ.save()
@@ -123,11 +120,13 @@ class Command(BaseCommand):
             else:
                 content = get_random_element(Answer.objects.all(), None,None)
 
-            vote = Vote(id=Vote.objects.count() + 1, author=get_random_element(Profile.objects, None, None))
-            print(vote.id)
-            vote.save()
-            content.votes.add(vote)
+            vote = Vote(user=get_random_element(Profile.objects, None,None),
+                        type_vote=random.randint(0, 1))
+
+            content.rate += (1 if vote.type_vote else -1)
             content.save()
+            vote.content_object = content
+            vote.save()
         self.stdout.write(self.style.SUCCESS('Successfully generate %d votes' % options['votes_count']))
 
     def add_arguments(self, parser):

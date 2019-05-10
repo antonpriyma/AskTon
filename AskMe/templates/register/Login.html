@@ -9,16 +9,17 @@
                     <div class="col-xl-9 pr-4 " >
                 <h1 class="mt-3 mb-4 mx-4">Log In</h1>
                 <span class="text-danger mx-4">
-                    Wrong login or password:(
+                    {{ error }}
                 </span>
-
+                <form method="post" action="{% url "login" %}">
+                    {% csrf_token %}
                 <div class="container-fluid mx-2 mb-3 mt-3">
                     <div class="row">
                         <div class="col-3">
                             <p>Login:</p>
                         </div>
                         <div class="col-lg-4">
-                            <input type="text" class="form-control" placeholder="Your login">
+                            <input type="text" name="username"  class="form-control" placeholder="Your login">
                         </div>
                     </div>
                 </div>
@@ -29,20 +30,21 @@
                             <p>Password:</p>
                         </div>
                         <div class="col-lg-4">
-                            <input type="password" class="form-control" placeholder="Your password">
+                            <input type="password" name="password" class="form-control" placeholder="Your password">
                         </div>
                         <div class="col-5">
 
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mx-1 my-2">
 
-                        <button class="btn btn-success mb-3 mx-2 mt-3">Log In</button>
+                        <button type="submit" class="btn btn-success">Log In</button>
 
                     </div>
                     <a href="#" class="card-link my-3 ">Create account</a>
                 </div>
+                    </form>
 
             </div>
                 </div>

@@ -1,8 +1,16 @@
 from django.shortcuts import render
+from pip._vendor.requests import auth
+import json
+
 from .paginate import paginate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .models import Question
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from .models import Tag
+from .models import User
+from django import forms
+from django.contrib import auth
+from django.contrib.auth.forms import UserCreationForm
 
 
 def questions_list(request):
@@ -92,7 +100,21 @@ def tag_question(request, tag_name):
 
 
 def login(request):
-    return render(request, 'register/Login.html', {})
+    if (request.method == 'POST'):
+        username=request.POST.get('username')
+        password = request.POST.get('password')
+        user = auth.authenticate(request,username=username,password=password)
+        if user:
+            auth.login(request,user)
+            return HttpResponseRedirect('index')
+        else:
+            return HttpResponseRedirect('login/invalid')
+
+    else:
+        return render(request, 'register/Login.html')
+
+def login_invalid(request):
+    return render(request, 'register/Login.html', {'error':"Invalid login or password:("})
 
 
 def settings(request):
@@ -100,7 +122,27 @@ def settings(request):
 
 
 def register(request):
-    return render(request, 'register/register.html', {})
+    form = UserCreationForm()
+    if (request.method == 'POST'):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        HttpResponseRedirect('index')
+
+
+    return render(request, 'register/register.html')
+
+def logout(request):
+    auth.logout(request)
+    return questions_list(request)
+
+def js(request):
+    return render(request,'AskMe/empty_js_page.html')
+
+def count(request):
+    return JsonResponse({'count':'5'})
 
 
 def test(request):

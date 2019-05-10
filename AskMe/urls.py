@@ -12,8 +12,13 @@ urlpatterns = [
     path('question/<int:question_id>', views.question_question, name='question'),
     path('tag/<tag_name>', views.tag_question, name='tag'),
     path('login', views.login, name='login'),
+    path('login/invalid', views.login_invalid, name='login_invalid'),
     path('register', views.register, name='register'),
     path('settings', views.settings, name='settings'),
     path('test/<page_num>', views.paginate, name='testPaginate'),
+    path('logout', views.logout, name='logout'),
+    path('js', views.js, name='js'),
+    path('questions/ajax/count',views.count,name='count')
+
 ]
 

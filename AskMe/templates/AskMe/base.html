@@ -27,23 +27,27 @@
 
             <a class="btn btn-outline-success my-auto ml-md-4" role="button" href="{% url "ask_question"  %}" type="submit">Ask!</a>
             <ul class="navbar-nav auto ml-auto mb-auto">
-                <li class="nav-item">
+
+                {% if user.is_authenticated %}
+                <li class="px-2">
+                    <div class="avatar-thumbnail mb-2">
+                        <img src="#">
+                    </div>
+                </li>
+                <li class="px-2">
+                    <div class="text-white ml-3" style="display: block;">Name</div>
+                    <a class="btn text-primary" href="#">settings</a>
+                    <a class="btn text-primary" href="{% url 'logout' %}">logout</a>
+                </li>
+            </ul>
+            {% else %}
+                 <li class="nav-item">
                 <a class="nav-link " href="{% url "login" %}">Sign In</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="{% url "register" %}">Sign Up</a>
                 </li>
-                <!--<li class="px-2">-->
-                    <!--<div class="avatar-thumbnail mb-2">-->
-                        <!--<img src="#">-->
-                    <!--</div>-->
-                <!--</li>-->
-                <!--<li class="px-2">-->
-                    <!--<div class="text-white ml-3" style="display: block;">Name</div>-->
-                    <!--<a class="btn text-primary" href="#">settings</a>-->
-                    <!--<a class="btn text-primary" href="#">logout</a>-->
-                <!--</li>-->
-            </ul>
+            {% endif %}
 
         </div>
 
