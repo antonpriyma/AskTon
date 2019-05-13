@@ -1,11 +1,16 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.views.generic import UpdateView
 from pip._vendor.requests import auth
 import json
 
-from AskMe.forms import CustomUserCreationForm
+from AskMe.forms import CustomUserCreationForm, UserChangingForm
 from .paginate import paginate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Question
+from .models import Question, Profile
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from .models import Tag
 from .models import User
@@ -85,6 +90,29 @@ def question_question(request, question_id):
     return render(request, 'AskMe/question.html', {'question': Question.list.get(pk=question_id)})
 
 
+@login_required
+def edit_profile(request, pk):
+    obj = get_object_or_404(Profile, username=pk)#TODO:ИСПРАВИТЬ
+
+    form = UserChangingForm(request.POST or None, instance=obj)
+    context = {'form': form}
+
+    if form.is_valid():
+        obj = form.save(commit=False)
+
+        obj.save()
+
+        messages.success(request, "You successfully updated the prfile")
+
+        context = {'form': form}
+
+        return HttpResponseRedirect('/index')
+
+    else:
+        context = {'form': form}
+        return render(request, 'register/accountSettings.html', context)
+
+
 def tag_question(request, tag_name):
     tag = Tag.objects.get(text=tag_name)
     questions = Question.list.new_questions().filter(tags__text=tag.text)
@@ -100,31 +128,33 @@ def tag_question(request, tag_name):
     return render(request, 'AskMe/QuestionsForTag.html', {'tag': tag, 'questions': quest})
 
 
-def login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request=request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = auth.authenticate(username=username, password=password)
-            if user is not None:
-                print(user)
-                auth.login(request, user)
-                return HttpResponseRedirect('index')
-            else:
-                return HttpResponseRedirect('login/invalid')
+# def login(request):
+#     if request.method == 'POST':
+#         form = AuthenticationForm(request=request, data=request.POST)
+#         if form.is_valid():
+#             username = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+#             user = auth.authenticate(username=username, password=password)
+#             if user is not None:
+#                 print(user)
+#                 auth.login(request, user)
+#                 return HttpResponseRedirect('index')
+#             else:
+#                 return HttpResponseRedirect('login/invalid')
+#
+#     elif request.method == 'GET':
+#         form = AuthenticationForm()
+#         return render(request, 'register/Login.html', {'form': form})
 
-    elif request.method == 'GET':
-        form = AuthenticationForm()
-        return render(request, 'register/Login.html', {'form': form})
 
-def login_invalid(request):
-    form = AuthenticationForm(request=request, data=request.POST)
-    return render(request, 'register/Login.html', {'error':"Invalid login or password:(",'form': form})
+# def login_invalid(request):
+#     form = AuthenticationForm(request=request, data=request.POST)
+#     return render(request, 'register/Login.html', {'error': "Invalid login or password:(", 'form': form})
+
 
 def register_invalid(request):
     form = CustomUserCreationForm(request.POST)
-    return render(request, 'register/register.html.html', {'error':"Invalid data:(",'form': form})
+    return render(request, 'register/register.html', {'error': "Invalid data:(", 'form': form})
 
 
 def settings(request):
@@ -140,7 +170,7 @@ def register(request):
             auth.login(request, user)
             return HttpResponseRedirect('index')
         else:
-            return HttpResponseRedirect('login/invalid')
+            return HttpResponseRedirect('register/invalid')
     elif request.method == 'GET':
         form = CustomUserCreationForm()
         return render(request, 'register/register.html', {'form': form})
@@ -150,14 +180,40 @@ def logout(request):
     auth.logout(request)
     return questions_list(request)
 
+
 def js(request):
-    return render(request,'AskMe/empty_js_page.html')
+    return render(request, 'AskMe/empty_js_page.html')
+
 
 def count(request):
-    return JsonResponse({'count':'5'})
+    return JsonResponse({'count': '5'})
 
 
 def test(request):
     return render(request, 'AskMe/test.html', {})
 
 
+class ProfileLoginView(LoginView):
+    template_name = 'register/Login.html'
+    redirect_field_name = 'continue'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('index'))
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ProfileLogoutView(LogoutView):
+    redirect_field_name = 'continue'
+
+# class ProfileUpdateView(LoginRequiredMixin,UpdateView):
+#     model = Profile
+#     context_object_name = 'profile'
+#     form_class = UserChangingForm
+#     template_name = 'register/accountSettings.html'
+#     redirect_field_name = 'continue'
+#
+#     def get_object(self, queryset=None):
+#         return self.request.user
+#

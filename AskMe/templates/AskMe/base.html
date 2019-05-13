@@ -10,7 +10,7 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-topx">
         <a class="navbar-brand mb-3 m-auto text-success" href="{% url "questions_list"  %}">AskTon</a>
         <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -36,13 +36,13 @@
                 </li>
                 <li class="px-2">
                     <div class="text-white ml-3" style="display: block;">{{ user.username }}</div>
-                    <a class="btn text-primary" href="#">settings</a>
-                    <a class="btn text-primary" href="{% url 'logout' %}">logout</a>
+                    <a class="btn text-primary" href="{% url 'settings' pk=user.username  %}">settings</a>
+                    <a class="btn text-primary" href="{% url 'logout' %}?continue=index">logout</a>
                 </li>
             </ul>
             {% else %}
                  <li class="nav-item">
-                <a class="nav-link " href="{% url "login" %}">Sign In</a>
+                <a class="nav-link " href="{% url "login" %}?continue=hot">Sign In</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="{% url "register" %}">Sign Up</a>
@@ -53,9 +53,10 @@
 
     </nav>
 
+
     <div class="container-fluid">
         <div class="row justify-content-end">
-             <div class="col-sm-9 mt-5 ">
+             <div class="col-sm-9 mt-3 ">
                   {% block main-content %}{% endblock %}
             </div>
             <div class="col-md-3 blog-sidebar bg-light">

@@ -102,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "AskMe.Profile"
+LOGIN_REDIRECT_URL = "questions_list"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

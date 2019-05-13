@@ -5,6 +5,24 @@ from django.core.exceptions import ValidationError
 from AskMe.models import Profile
 
 
+# class ImageWithPreviewInput(forms.widgets.ClearableFileInput):
+#     input_text = 'Change avatar'
+#     template_name = 'widgets/image_upload.html'
+#
+#     def __init__(self, initial_tn = None, attrs=None):
+#         super().__init__(attrs=attrs)
+#         self.initial_tn = initial_tn
+#
+#     def get_context(self, name, value, attrs):
+#         context = super().get_context(name, self.initial_tn, attrs)
+#         return context
+
+class UserChangingForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('username','email','photo')
+
+
 class CustomUserCreationForm(forms.Form):
     username = forms.CharField(label='Enter Username', min_length=4, max_length=150)
     email = forms.EmailField(label='Enter email')
