@@ -104,7 +104,7 @@ class Command(BaseCommand):
                 question.save()
                 i += 1
             except IntegrityError:
-                self.stdout.write('Info: Question DUPLICATION. Repeating #' + str(i))
+                self.stdout.write('Info: Question DUPLI CATION. Repeating #' + str(i))
                 continue
 
         min_question_pk, max_question_pk = get_borders(Question.list.all())

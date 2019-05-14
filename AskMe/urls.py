@@ -1,4 +1,5 @@
 from django.urls import include,path
+from django.contrib.auth.decorators import login_required, permission_required
 
 from . import views
 
@@ -8,18 +9,12 @@ urlpatterns = [
     path('hot/', views.hot_list, name='hot_list'),
     path('best/', views.best_list, name='best_list'),
     path('new/', views.new_list, name='new_list'),
-    path('ask', views.ask_question, name='ask_question'),
+    path('ask', login_required(views.QuestionUploadView.as_view()), name='ask_question'),
     path('question/<int:question_id>', views.question_question, name='question'),
     path('tag/<tag_name>', views.tag_question, name='tag'),
-    path('login', views.ProfileLoginView.as_view(), name='login'),
-    # path('login/invalid', views.login_invalid, name='login_invalid'),
-    path('register', views.register, name='register'),
-    path('register/invalid', views.register_invalid, name='register_invalid'),
+    path('login/', views.ProfileLoginView.as_view(), name='login'),
+    path('register', views.ProfileCreateView.as_view(), name='register'),
     path('settings/<pk>', views.edit_profile, name='settings'),
-    path('test/<page_num>', views.paginate, name='testPaginate'),
-    path('logout', views.ProfileLogoutView.as_view(), name='logout'),
-    path('js', views.js, name='js'),
-    path('questions/ajax/count',views.count,name='count')
-
+    path('logout', login_required(views.ProfileLogoutView.as_view()), name='logout'),
 ]
 

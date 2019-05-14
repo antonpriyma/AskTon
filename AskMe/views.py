@@ -1,26 +1,21 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.views.generic import UpdateView
-from pip._vendor.requests import auth
-import json
-
-from AskMe.forms import CustomUserCreationForm, UserChangingForm
-from .paginate import paginate
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Question, Profile
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from .models import Tag
-from .models import User
-from django import forms
 from django.contrib import auth, messages
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView, LogoutView
+from django.core.paginator import EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404, resolve_url
+from django.urls import reverse
+from django.views.generic import CreateView
+from pip._vendor.requests import auth
+
+from AskMe.forms import UserChangingForm, CustomLoginForm, QuestionUploadForm, \
+    CustomUserCreationForm, AnswerUploadForm
+from .models import Question, Profile, Answer
+from .models import Tag
+from .paginate import paginate
 
 
 def questions_list(request):
-    # return render(request, 'AskMe/index.html',{'questions':questions})
     questons = Question.list.all()
     paginator = paginate(request, questons)
     page = request.GET.get('page')
@@ -82,20 +77,11 @@ def new_list(request):
     return render(request, 'AskMe/new_questions.html', {'questions': quest})
 
 
-def ask_question(request):
-    return render(request, 'AskMe/ask.html', {})
-
-
-def question_question(request, question_id):
-    return render(request, 'AskMe/question.html', {'question': Question.list.get(pk=question_id)})
-
-
-@login_required
+@login_required  # TODO:контроль логина
 def edit_profile(request, pk):
-    obj = get_object_or_404(Profile, username=pk)#TODO:ИСПРАВИТЬ
+    obj = get_object_or_404(Profile, username=pk)  # TODO:ИСПРАВИТЬ
 
     form = UserChangingForm(request.POST or None, instance=obj)
-    context = {'form': form}
 
     if form.is_valid():
         obj = form.save(commit=False)
@@ -103,8 +89,6 @@ def edit_profile(request, pk):
         obj.save()
 
         messages.success(request, "You successfully updated the prfile")
-
-        context = {'form': form}
 
         return HttpResponseRedirect('/index')
 
@@ -128,84 +112,59 @@ def tag_question(request, tag_name):
     return render(request, 'AskMe/QuestionsForTag.html', {'tag': tag, 'questions': quest})
 
 
-# def login(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request=request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             user = auth.authenticate(username=username, password=password)
-#             if user is not None:
-#                 print(user)
-#                 auth.login(request, user)
-#                 return HttpResponseRedirect('index')
-#             else:
-#                 return HttpResponseRedirect('login/invalid')
-#
-#     elif request.method == 'GET':
-#         form = AuthenticationForm()
-#         return render(request, 'register/Login.html', {'form': form})
-
-
-# def login_invalid(request):
-#     form = AuthenticationForm(request=request, data=request.POST)
-#     return render(request, 'register/Login.html', {'error': "Invalid login or password:(", 'form': form})
-
-
-def register_invalid(request):
-    form = CustomUserCreationForm(request.POST)
-    return render(request, 'register/register.html', {'error': "Invalid data:(", 'form': form})
-
-
-def settings(request):
-    return render(request, 'register/accountSettings.html', {})
-
-
-def register(request):
+def question_question(request, question_id):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = AnswerUploadForm(data=request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Account created successfully')
-            auth.login(request, user)
-            return HttpResponseRedirect('index')
-        else:
-            return HttpResponseRedirect('register/invalid')
+            content = form.cleaned_data.get('content')
+            answer = Answer(content=content, questions=Question.list.get(pk=question_id), author=request.user)
+            answer.save()
+            return HttpResponseRedirect(str(question_id))
     elif request.method == 'GET':
-        form = CustomUserCreationForm()
-        return render(request, 'register/register.html', {'form': form})
-
-
-def logout(request):
-    auth.logout(request)
-    return questions_list(request)
-
-
-def js(request):
-    return render(request, 'AskMe/empty_js_page.html')
-
-
-def count(request):
-    return JsonResponse({'count': '5'})
-
-
-def test(request):
-    return render(request, 'AskMe/test.html', {})
+        form = AnswerUploadForm
+        return render(request, 'AskMe/question.html', {'question': Question.list.get(pk=question_id), 'form': form})
 
 
 class ProfileLoginView(LoginView):
     template_name = 'register/Login.html'
     redirect_field_name = 'continue'
+    form_class = CustomLoginForm
+    redirect_url = None
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('index'))
-
+            return HttpResponseRedirect('/index')
+        self.redirect_url = self.request.GET.get(self.redirect_field_name)
         return super().dispatch(request, *args, **kwargs)
 
 
 class ProfileLogoutView(LogoutView):
     redirect_field_name = 'continue'
+
+
+class ProfileCreateView(CreateView):
+    template_name = 'register/register.html'
+    form_class = CustomUserCreationForm
+
+    def get_success_url(self):
+        return reverse('questions_list')
+
+    def form_valid(self, form):
+        return super(ProfileCreateView, self).form_valid(form)
+
+
+class QuestionUploadView(CreateView):
+    template_name = 'AskMe/ask.html'
+    form_class = QuestionUploadForm
+
+    redirect_field_name = 'continue'
+
+    def get_success_url(self):
+        return reverse('question', kwargs={'question_id': self.object.pk})
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(QuestionUploadView, self).form_valid(form)
 
 # class ProfileUpdateView(LoginRequiredMixin,UpdateView):
 #     model = Profile

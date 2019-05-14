@@ -1,64 +1,68 @@
+{% extends 'AskMe/base.html' %}
+{% load crispy_forms_tags %}
 
-{%  extends 'AskMe/base.html' %}
+
 {% load static %}
 
 
 
 
-                 {% block main-content %}
-                <div class="row justify-content-begin">
-                    <div class="col-xl-9 pr-4 " >
-                <h1 class="mb-4 mx-4">Log In</h1>
-                <span class="text-danger mx-4">
+{% block main-content %}
+    <div class="row justify-content-begin">
+        <div class="col-xl-9 pr-4 ">
+            <h1 class="mb-4 mx-4">Log In</h1>
+            <span class="text-danger mx-4">
                     {{ error }}
                 </span>
-{#                <form method="post" action="{% url "login" %}">#}
-{#                    {% csrf_token %}#}
-{#                <div class="container-fluid mx-2 mb-3 mt-3">#}
-{#                    <div class="row">#}
-{#                        <div class="col-3">#}
-{#                            <p>Login:</p>#}
-{#                        </div>#}
-{#                        <div class="col-lg-4">#}
-{#                            <input type="text" name="username"  class="form-control" placeholder="Your login">#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{##}
-{#                <div class="container-fluid mx-2">#}
-{#                    <div class="row">#}
-{#                        <div class="col-3">#}
-{#                            <p>Password:</p>#}
-{#                        </div>#}
-{#                        <div class="col-lg-4">#}
-{#                            <input type="password" name="password" class="form-control" placeholder="Your password">#}
-{#                        </div>#}
-{#                        <div class="col-5">#}
-{##}
-{#                        </div>#}
-{#                    </div>#}
-{##}
-{#                    <div class="row mx-1 my-2">#}
-{##}
-{#                        <button type="submit" class="btn btn-success">Log In</button>#}
-{##}
-{#                    </div>#}
-{#                    <a href="#" class="card-link my-3 ">Create account</a>#}
-{#                </div>#}
-{#                    </form>#}
-                <form method="post" action="{% url "login" %}">
-                        {% csrf_token %}
-                    <div class="container-fluid mx-2">
-                    <table>
-                            {{ form.as_table }}
-                        </table>
-                        <button type="submit" class="btn btn-success my-2">Log In</button>
-                        </div>
-                </form>
-
+            {#                <form method="post" action="{% url "login" %}">#}
+            {#                    {% csrf_token %}#}
+            {#                <div class="container-fluid mx-2 mb-3 mt-3">#}
+            {#                    <div class="row">#}
+            {#                        <div class="col-3">#}
+            {#                            <p>Login:</p>#}
+            {#                        </div>#}
+            {#                        <div class="col-lg-4">#}
+            {#                            <input type="text" name="username"  class="form-control" placeholder="Your login">#}
+            {#                        </div>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {##}
+            {#                <div class="container-fluid mx-2">#}
+            {#                    <div class="row">#}
+            {#                        <div class="col-3">#}
+            {#                            <p>Password:</p>#}
+            {#                        </div>#}
+            {#                        <div class="col-lg-4">#}
+            {#                            <input type="password" name="password" class="form-control" placeholder="Your password">#}
+            {#                        </div>#}
+            {#                        <div class="col-5">#}
+            {##}
+            {#                        </div>#}
+            {#                    </div>#}
+            {##}
+            {#                    <div class="row mx-1 my-2">#}
+            {##}
+            {#                        <button type="submit" class="btn btn-success">Log In</button>#}
+            {##}
+            {#                    </div>#}
+            {#                    <a href="#" class="card-link my-3 ">Create account</a>#}
+            {#                </div>#}
+            {#                    </form>#}
+            {% if continue %}
+                <form method="post" action="{% url 'login' %}?continue={{ continue }}">
+            {% else %}
+                <form method="post" action="{% url 'login' %}">
+            {% endif %}
+            {% csrf_token %}
+            <div class="container-fluid mx-2">
+                {% crispy form %}
+                <button type="submit" class="btn btn-success my-2 mx-3">Log In</button>
             </div>
-                </div>
-                {% endblock %}
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
 
 
 

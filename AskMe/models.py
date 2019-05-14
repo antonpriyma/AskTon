@@ -27,6 +27,12 @@ class Profile(AbstractUser):
 
 
 class Vote(models.Model):
+    # unique_together=(
+    #     'object_id',
+    #     'type_vote',
+    #     'content_object',
+    #     'user'
+    # )
     LIKE = 1
     DISLIKE = 0
 
