@@ -27,12 +27,13 @@ class Profile(AbstractUser):
 
 
 class Vote(models.Model):
-    # unique_together=(
-    #     'object_id',
-    #     'type_vote',
-    #     'content_object',
-    #     'user'
-    # )
+        # unique_together = (
+        #     'object_id',
+        #     'type_vote',
+        #     'content_object',
+        #     'user'
+        # )
+
     LIKE = 1
     DISLIKE = 0
 
@@ -54,7 +55,6 @@ class Vote(models.Model):
 class Tag(models.Model):
     text = models.CharField(max_length=64, unique=True)
 
-
     def __str__(self):
         return self.text
 
@@ -71,7 +71,6 @@ class Post(models.Model):
         abstract = True
 
 
-
 class Question(Post):
     tags = models.ManyToManyField(Tag)
 
@@ -86,6 +85,6 @@ class Question(Post):
 class Answer(Post):
     isRight = models.BooleanField(default=False)
     questions = models.ForeignKey(Question, on_delete=models.CASCADE, default=None)
+
     def __str__(self):
         return self.content
-

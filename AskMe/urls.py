@@ -1,6 +1,8 @@
+from django.conf.urls.static import static
 from django.urls import include,path
 from django.contrib.auth.decorators import login_required, permission_required
 
+from myproject import settings
 from . import views
 
 
@@ -16,5 +18,9 @@ urlpatterns = [
     path('register', views.ProfileCreateView.as_view(), name='register'),
     path('settings/<pk>', views.edit_profile, name='settings'),
     path('logout', login_required(views.ProfileLogoutView.as_view()), name='logout'),
+
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 

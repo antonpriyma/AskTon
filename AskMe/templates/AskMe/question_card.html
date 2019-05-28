@@ -4,7 +4,7 @@
     <div class="row  mb-4 mt-3  p-2 border border-dark rounded ml-4">
                     <div class="col-sm-2  my-auto ">
                         <div class="avatar-thumbnail mb-2">
-                            <img src="{% static question.author.photo.url %}" width="100" height="100">
+                            <img src="{{ user.photo.url}}" width="100" height="100">
                         </div>
                         <div class="mt-4">
                             <kbd>Rating: {{ question.rate}}</kbd>

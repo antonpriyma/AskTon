@@ -1,89 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-{%  load static %}
+{% load static %}
 <head>
     <title>Base</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{%  static  'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static  'bootstrap/css/bootstrap.min.css' %}">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-topx">
-        <a class="navbar-brand mb-3 m-auto text-success" href="{% url "questions_list"  %}">AskTon</a>
-        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse" id="navbarCollapse" style="">
-            <form class="navbar-form mx=auto w-50" action="#" >
-                <div class="input-group ml-3 my-auto">
-                    <input class="form-control " type="text" placeholder="Question">
-                    <div class="input-group-append">
-                        <span class="input-group-text">?</span>
-                    </div>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-topx">
+    <a class="navbar-brand mb-3 m-auto text-success" href="{% url "questions_list" %}">AskTon</a>
+    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+        <form class="navbar-form mx=auto w-50" action="#">
+            <div class="input-group ml-3 my-auto">
+                <input class="form-control " type="text" placeholder="Question">
+                <div class="input-group-append">
+                    <span class="input-group-text">?</span>
                 </div>
-            </form>
+            </div>
+        </form>
 
-            <a class="btn btn-outline-success my-auto ml-md-4" role="button" href="{% url "ask_question"  %}" type="submit">Ask!</a>
-            <ul class="navbar-nav auto ml-auto mb-auto">
+        <a class="btn btn-outline-success my-auto ml-md-4" role="button" href="{% url "ask_question" %}" type="submit">Ask!</a>
+        <ul class="navbar-nav auto ml-auto mb-auto">
 
-                {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
                 <li class="px-2">
                     <div class="avatar-thumbnail mb-2">
-                        <img src="{% static user.photo.url %}" width="50" height="50">
+                        <img src="{{ user.photo.url}}" width="50" height="50" >
                     </div>
                 </li>
                 <li class="px-2">
                     <div class="text-white ml-3" style="display: block;">{{ user.username }}</div>
-                    <a class="btn text-primary" href="{% url 'settings' pk=user.username  %}">settings</a>
+                    <a class="btn text-primary" href="{% url 'settings' pk=user.username %}">settings</a>
                     <a class="btn text-primary" href="{% url 'logout' %}?continue=index">logout</a>
                 </li>
-            </ul>
+                </ul>
             {% else %}
-                 <li class="nav-item">
-                <a class="nav-link " href="{% url "login" %}?continue=/hot">Sign In</a>
+                <li class="nav-item">
+                    <a class="nav-link " href="{% url "login" %}?continue=/hot">Sign In</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="{% url "register" %}">Sign Up</a>
+                    <a class="nav-link" href="{% url "register" %}">Sign Up</a>
                 </li>
             {% endif %}
 
+    </div>
+
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-end">
+        <div class="col-sm-9 mt-3 ">
+            {% block main-content %}{% endblock %}
         </div>
+        <div class="col-md-3 blog-sidebar bg-light">
+            <div class="p-3 mb-3  rounded">
+                <h4 class="mb-3">Popular Tags</h4>
 
-    </nav>
-
-
-    <div class="container-fluid">
-        <div class="row justify-content-end">
-             <div class="col-sm-9 mt-3 ">
-                  {% block main-content %}{% endblock %}
+                <div id="tag-cloud" class="md-0">
+                    <h2 class="ml-auto">Tags</h2>
+                </div>
             </div>
-            <div class="col-md-3 blog-sidebar bg-light">
-                <div class="p-3 mb-3  rounded">
-                    <h4 class="mb-3">Popular Tags</h4>
-
-                    <div id="tag-cloud" class="md-0">
-                        <h2 class="ml-auto">Tags</h2>
-                    </div>
-                </div>
-                <div class="p-3 ">
-                    <h4 class="mb-3">Best Members</h4>
-                    <ol class="list mb-1">
-                        <li class="mb-1"><a href="#"><u>Steve</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Hue</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Mark</u></a></li>
-                        <li class="mb-1"><a href="#"><u>German</u></a></li>
-                        <li class="mb-1"><a href="#"><u>Pupkin</u></a></li>
-                    </ol>
-                </div>
+            <div class="p-3 ">
+                <h4 class="mb-3">Best Members</h4>
+                <ol class="list mb-1">
+                    <li class="mb-1"><a href="#"><u>Steve</u></a></li>
+                    <li class="mb-1"><a href="#"><u>Hue</u></a></li>
+                    <li class="mb-1"><a href="#"><u>Mark</u></a></li>
+                    <li class="mb-1"><a href="#"><u>German</u></a></li>
+                    <li class="mb-1"><a href="#"><u>Pupkin</u></a></li>
+                </ol>
             </div>
         </div>
     </div>
+</div>
 
-    <!--<div class ="container mt-2">-->
-    <!--<h1 class="display1">Пробую делать web</h1>-->
-    <!--</div>-->
+<!--<div class ="container mt-2">-->
+<!--<h1 class="display1">Пробую делать web</h1>-->
+<!--</div>-->
 
 </body>
 

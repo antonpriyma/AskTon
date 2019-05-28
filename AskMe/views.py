@@ -81,20 +81,22 @@ def new_list(request):
 def edit_profile(request, pk):
     obj = get_object_or_404(Profile, username=pk)  # TODO:ИСПРАВИТЬ
 
-    form = UserChangingForm(request.POST or None, instance=obj)
+    form = UserChangingForm(request.POST or None ,instance=obj)
+
 
     if form.is_valid():
+        print(form.cleaned_data.get('photo'))
         obj = form.save(commit=False)
-
+        print(obj.photo.url)
         obj.save()
 
-        messages.success(request, "You successfully updated the prfile")
+        messages.success(request, "You successfully updated the profile")
 
         return HttpResponseRedirect('/index')
 
     else:
         context = {'form': form}
-        return render(request, 'register/accountSettings.html', context)
+        return render(request, 'register/account_settings.html', context)
 
 
 def tag_question(request, tag_name):
@@ -109,15 +111,17 @@ def tag_question(request, tag_name):
         quest = paginator.page(1)
     except EmptyPage:
         quest = paginator.page(paginator.num_pages)
-    return render(request, 'AskMe/QuestionsForTag.html', {'tag': tag, 'questions': quest})
+    return render(request, 'AskMe/questions_for_tag.html', {'tag': tag, 'questions': quest})
 
 
 def question_question(request, question_id):
     if request.method == 'POST':
         form = AnswerUploadForm(data=request.POST)
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/login?continue=/question/'+str(question_id))
         if form.is_valid():
             content = form.cleaned_data.get('content')
-            answer = Answer(content=content, questions=Question.list.get(pk=question_id), author=request.user)
+            answer = Answer(content=content, questions=Question.list.get(pk=question_id), author=request.user,title=Question.list.get(pk=question_id).title)
             answer.save()
             return HttpResponseRedirect(str(question_id))
     elif request.method == 'GET':
@@ -126,7 +130,7 @@ def question_question(request, question_id):
 
 
 class ProfileLoginView(LoginView):
-    template_name = 'register/Login.html'
+    template_name = 'register/login.html'
     redirect_field_name = 'continue'
     form_class = CustomLoginForm
     redirect_url = None
@@ -166,13 +170,3 @@ class QuestionUploadView(CreateView):
         form.instance.author = self.request.user
         return super(QuestionUploadView, self).form_valid(form)
 
-# class ProfileUpdateView(LoginRequiredMixin,UpdateView):
-#     model = Profile
-#     context_object_name = 'profile'
-#     form_class = UserChangingForm
-#     template_name = 'register/accountSettings.html'
-#     redirect_field_name = 'continue'
-#
-#     def get_object(self, queryset=None):
-#         return self.request.user
-#

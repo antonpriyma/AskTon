@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
-from AskMe.models import Profile, Question, Answer
+from AskMe.models import Profile, Question, Answer, Tag
 
 
 # TODO:валидация и сообщения об ошибках
@@ -39,19 +39,24 @@ class UserChangingForm(forms.ModelForm):
         model = Profile
         fields = ('username', 'email', 'photo')
 
-    def clean_username(self):
-        username = self.cleaned_data['username'].lower()
-        r = Profile.objects.filter(username=username)
-        if r.count():
-            raise ValidationError("Username already exists")
-        return username
+    def __init__(self, *args, **kwargs):
+        super(UserChangingForm, self).__init__(*args, **kwargs)
 
-    def clean_email(self):
-        email = self.cleaned_data['email'].lower()
-        r = Profile.objects.filter(email=email)
-        if r.count():
-            raise ValidationError("Email already exists")
-        return email
+    # def clean_username(self):
+    #     username = self.cleaned_data['username'].lower()
+    #     r = Profile.objects.filter(username=username)
+    #     if r.count():
+    #         raise ValidationError("Username already exists")
+    #     return username
+    #
+    # def clean_email(self):
+    #     email = self.cleaned_data['email'].lower()
+    #     r = Profile.objects.filter(email=email)
+    #     if r.count():
+    #         raise ValidationError("Email already exists")
+    #     return email
+    # def clean_photo(self):
+    #     return self.cleaned_data['photo']
 
 
 class QuestionUploadForm(forms.ModelForm):
@@ -60,6 +65,25 @@ class QuestionUploadForm(forms.ModelForm):
     helper.form_method = 'POST'
     helper.label_class = 'col-sm-2'
     helper.field_class = 'col-sm-6'
+    tags = forms.CharField()
+
+    def clean_tags(self):
+        tags_str = self.cleaned_data['tags']
+        tags = list(filter(lambda tag: tag != "", [tag.strip() for tag in tags_str.split(',')]))
+        if len(tags) == 0:
+            raise forms.ValidationError("Нужны теги!")
+
+        return tags
+
+    def save(self, commit=True):
+        instance = super(QuestionUploadForm, self).save(commit=False)
+
+        if commit:
+            instance.save()
+            for tag in self.cleaned_data.get('tags'):
+                print(tag)
+                instance.tags.add(Tag.objects.get_or_create(text=tag)[0].pk)
+        return instance
 
     class Meta:
         model = Question
